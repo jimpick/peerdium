@@ -1,4 +1,4 @@
-const base = location.href.startsWith("https://lunet.link/ipfs/") ? "" : "."
+const baseURI = new URL("https://lunet.link/")
 
 const localstorage_available = typeof Storage !== "undefined"
 var quill
@@ -98,7 +98,7 @@ const publish = async file => {
   const data = new FormData()
   data.append("file", file)
 
-  const put = await fetch(`${base}/api/v0/add`, {
+  const put = await fetch(new URL(`/api/v0/add`, baseURI), {
     body: data,
     method: "POST"
   })
@@ -108,7 +108,7 @@ const publish = async file => {
 }
 
 const load = async cid => {
-  const response = await fetch(`${base}/ipfs/${cid}`)
+  const response = await fetch(new URL(`/ipfs/${cid}`, baseURI)
   if (response.status === 200) {
     return await response.text()
   } else {
@@ -124,7 +124,7 @@ const addToLibrary = async (hash, title) => {
     ["arg", `/${title}`]
   ])
 
-  return await fetch(`${base}/api/v0/files/cp?${params.toString()}`, {
+  return await fetch(new URL(`/api/v0/files/cp?${params.toString()}`, baseURI), {
     method: "POST"
   })
 }
