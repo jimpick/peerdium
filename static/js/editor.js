@@ -108,7 +108,7 @@ const publish = async file => {
 }
 
 const load = async cid => {
-  const response = await fetch(new URL(`/ipfs/${cid}`, baseURI)
+  const response = await fetch(new URL(`/ipfs/${cid}`, baseURI))
   if (response.status === 200) {
     return await response.text()
   } else {
@@ -124,9 +124,12 @@ const addToLibrary = async (hash, title) => {
     ["arg", `/${title}`]
   ])
 
-  return await fetch(new URL(`/api/v0/files/cp?${params.toString()}`, baseURI), {
-    method: "POST"
-  })
+  return await fetch(
+    new URL(`/api/v0/files/cp?${params.toString()}`, baseURI),
+    {
+      method: "POST"
+    }
+  )
 }
 
 var post_info = new Vue({
