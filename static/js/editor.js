@@ -1,4 +1,4 @@
-const baseURI = new URL("https://lunet.link/")
+const baseURI = new URL("https://lunet.jimpick.com/")
 
 const localstorage_available = typeof Storage !== "undefined"
 var quill
