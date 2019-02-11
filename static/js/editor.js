@@ -171,9 +171,11 @@ var post_info = new Vue({
       const content = await encrypt(document, password)
       const file = new File([content], title, { type: "text/plain" })
       const hash = await publish(file)
-      // FIXME: Escape correctly
+      const pre = window.document.createElement('pre')
+      const preText = window.document.createTextNode(quill.getText())
+      pre.appendChild(preText)
       const html = `<html><head><title>${title}</title></head>` +
-        `<body><pre>\n${quill.getText()}\n</pre></body></html>`
+        `<body><pre>${pre.innerHTML}</pre></body></html>`
       const staticFile = new File(
         [html],
         'index.html',
