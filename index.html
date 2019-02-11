@@ -14,6 +14,9 @@
   </head>
   <body>
       <div id="post-info-section">
+        <div class="published-url" v-if="published_url">
+          Published to: <a :href="published_url" target="_blank">{{published_url}}</a>
+        </div>
         <div title="Hearted posts would be stored in browser and can be viewed even if no one else is sharing them" id="heart-parent" v-on:click="toogle_heart">
           <div v-bind:class="class_name"></div>
         </div>

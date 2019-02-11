@@ -107,6 +107,13 @@ const publish = async file => {
   return Hash
 }
 
+const cidBase32 = async cid => {
+  const get = await fetch(new URL(`/api/v0/cid/base32?arg=${cid}`, baseURI))
+  const { Formatted: newCid } = await get.json()
+
+  return newCid
+}
+
 const load = async cid => {
   const response = await fetch(new URL(`/ipfs/${cid}`, baseURI))
   if (response.status === 200) {
@@ -136,7 +143,8 @@ var post_info = new Vue({
   el: "#post-info-section",
   data: {
     show_post_button: true,
-    class_name: ""
+    class_name: "",
+    published_url: null
   },
   methods: {
     post_document: async () => {
@@ -147,6 +155,15 @@ var post_info = new Vue({
       const content = await encrypt(document, password)
       const file = new File([content], title, { type: "text/plain" })
       const hash = await publish(file)
+      const staticFile = new File(
+        [quill.getText()],
+        'index.txt',
+        { type: "text/plain" }
+      )
+      const staticCid = await publish(staticFile)
+      const staticCidBase32 = await cidBase32(staticCid)
+      console.log('Jim published staticly', staticCidBase32)
+      post_info.published_url = `https://${staticCidBase32}.lunet.v6z.me/`
 
       location.hash = `${password}${hash}`
 
