@@ -107,6 +107,22 @@ const publish = async file => {
   return Hash
 }
 
+const publishWrapWithDir = async file => {
+  const data = new FormData()
+  data.append("file", file)
+
+  const url = new URL(`/api/v0/add?wrap-with-directory=true`, baseURI)
+  const put = await fetch(url, {
+    body: data,
+    method: "POST"
+  })
+  const result = await put.text()
+  const lastLine = result.split('\n').filter(line => line.length > 0).slice(-1)
+  const { Hash } = JSON.parse(lastLine)
+
+  return Hash
+}
+
 const cidBase32 = async cid => {
   const get = await fetch(new URL(`/api/v0/cid/base32?arg=${cid}`, baseURI))
   const { Formatted: newCid } = await get.json()
@@ -155,14 +171,16 @@ var post_info = new Vue({
       const content = await encrypt(document, password)
       const file = new File([content], title, { type: "text/plain" })
       const hash = await publish(file)
+      // FIXME: Escape correctly
+      const html = `<html><head><title>${title}</title></head>` +
+        `<body><pre>\n${quill.getText()}\n</pre></body></html>`
       const staticFile = new File(
-        [quill.getText()],
-        'index.txt',
+        [html],
+        'index.html',
         { type: "text/plain" }
       )
-      const staticCid = await publish(staticFile)
+      const staticCid = await publishWrapWithDir(staticFile)
       const staticCidBase32 = await cidBase32(staticCid)
-      console.log('Jim published staticly', staticCidBase32)
       post_info.published_url = `https://${staticCidBase32}.lunet.v6z.me/`
 
       location.hash = `${password}${hash}`
