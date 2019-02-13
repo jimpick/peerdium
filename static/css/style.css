@@ -42,6 +42,26 @@ article {
     position: relative;
 }
 
+.pinner-iframe {
+  width: 0px;
+  height: 0px;
+  position: absolute;
+  z-index: -2;
+  border: none;
+}
+
+#pinner-debug {
+    position: absolute;
+    z-index: 100;
+    top: 0;
+    right: 0;
+    font-size: smaller;
+}
+
+#pinner-debug a {
+    color: #aaa;
+}
+
 .standalone-container {
     margin-left: 50px;
     max-width: 900px;

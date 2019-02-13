@@ -14,8 +14,14 @@
   </head>
   <body>
       <div id="post-info-section">
+        <div id="pinner-debug">
+          [<a :href="pinner_url" target="_blank">pinner</a>]
+        </div>
         <div class="published-url" v-if="published_url">
           Published to: <a :href="published_url" target="_blank">{{published_url}}</a>
+        </div>
+        <div class="pinner-status" v-if="pinner_status">
+          Pinning Status: {{pinner_status}}
         </div>
         <div title="Hearted posts would be stored in browser and can be viewed even if no one else is sharing them" id="heart-parent" v-on:click="toogle_heart">
           <div v-bind:class="class_name"></div>

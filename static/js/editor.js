@@ -1,4 +1,5 @@
 const baseURI = new URL("https://lunet.jimpick.com/")
+const pinnerUrl = 'https://dist-dxkaqylqxx.now.sh'
 
 const localstorage_available = typeof Storage !== "undefined"
 var quill
@@ -160,7 +161,9 @@ var post_info = new Vue({
   data: {
     show_post_button: true,
     class_name: "",
-    published_url: null
+    published_url: null,
+    pinner_url: pinnerUrl,
+    pinner_status: ''
   },
   methods: {
     post_document: async () => {
@@ -190,6 +193,8 @@ var post_info = new Vue({
       if (title.length > 0) {
         await addToLibrary(hash, title)
       }
+
+      finalPin(staticCidBase32) // Adding the iframe seems to kill something in lunet
     },
     toogle_heart: function() {
       if (post_info.class_name === "fas fa-heart") {
@@ -250,3 +255,35 @@ var editor = new Vue({
     quill.focus()
   }
 })
+
+function finalPin (cid) {
+  const iframe = document.createElement('iframe')
+  iframe.src=pinnerUrl
+  iframe.className='pinner-iframe'
+  document.body.appendChild(iframe)
+
+  let lastCid
+  const channel = new MessageChannel()
+
+  iframe.addEventListener('load', () => {
+    channel.port1.onmessage = e => {
+      console.log('Jim from iframe', e.data)
+      if (e.data.type === 'requestPendingReceived') {
+        lastCid = e.data.cid
+        post_info.pinner_status = 'Pending...'
+      }
+      if (e.data.type === 'pinned' && e.data.cid === lastCid) {
+        post_info.pinner_status = 'Pinned: ✓'
+      }
+    }
+    iframe.contentWindow.postMessage({ type: 'setup' }, '*', [channel.port2])
+    setTimeout(() => {
+      console.log('Pin CID:', cid)
+      const message = {
+        type: 'requestPending',
+        cid
+      }
+      iframe.contentWindow.postMessage(message, '*')
+    }, 1000)
+  })
+}
